@@ -383,6 +383,31 @@
       <button type="button" class="btn-clear" onclick="borrarTodo()">
         🗑️ Limpiar Lista del Día
       </button>
+      <div class="grupo-botones" style="margin-top: 10px">
+        <button
+          type="button"
+          class="btn-pegar"
+          style="font-size: 13px; padding: 10px"
+          onclick="exportarJSON()"
+        >
+          📤 Copia Memoria (JSON)
+        </button>
+        <button
+          type="button"
+          class="btn-pegar"
+          style="font-size: 13px; padding: 10px"
+          onclick="document.getElementById('inputJSON').click()"
+        >
+          📥 Cargar Memoria
+        </button>
+      </div>
+      <input
+        type="file"
+        id="inputJSON"
+        accept=".json"
+        style="display: none"
+        onchange="importarJSON(event)"
+      />
 
       <table id="tabla">
         <thead>
@@ -700,6 +725,56 @@
           localStorage.removeItem("mermas");
           actualizarTabla();
         }
+      }
+
+      function exportarJSON() {
+        var copia = {
+          diccionario: diccionarioProductos,
+          registros: registros,
+        };
+        var blob = new Blob([JSON.stringify(copia, null, 2)], {
+          type: "application/json",
+        });
+        var link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download =
+          "copia_mermas_familycash_" +
+          new Date().toISOString().slice(0, 10) +
+          ".json";
+        link.click();
+      }
+
+      function importarJSON(event) {
+        var archivo = event.target.files;
+        if (!archivo) return;
+
+        var lector = new FileReader();
+        lector.onload = function (e) {
+          try {
+            var datos = JSON.parse(e.target.result);
+            if (datos.diccionario) {
+              diccionarioProductos = Object.assign(
+                {},
+                diccionarioProductos,
+                datos.diccionario
+              );
+              localStorage.setItem(
+                "diccionario_fc",
+                JSON.stringify(diccionarioProductos)
+              );
+              actualizarContadorMemoria();
+            }
+            if (datos.registros && Array.isArray(datos.registros)) {
+              registros = datos.registros;
+              localStorage.setItem("mermas", JSON.stringify(registros));
+              actualizarTabla();
+            }
+            alert("✅ Copia restaurada correctamente.");
+          } catch (err) {
+            alert("❌ El archivo seleccionado no es una copia válida.");
+          }
+        };
+        lector.readAsText(archivo);
       }
     </script>
   </body>

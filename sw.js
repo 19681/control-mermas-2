@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mermas-fc-v1';
+const CACHE_NAME = 'mermas-fc-v2';
 const ARCHIVOS_A_GUARDAR = [
   './',
   './index.html',
