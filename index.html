@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Control Mermas - Family Cash</title>
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#61A229" />
+    <script src="html5-qrcode.min.js" type="text/javascript"></script>
+    <style>
+      :root {
+        --fc-verde: #61a229;
+        --fc-verde-oscuro: #4b801e;
+        --fc-lima: #b8ca04;
+        --fc-oscuro: #222222;
+        --fc-fondo: #f2f6ef;
+      }
+
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        padding: 12px;
+        max-width: 500px;
+        margin: auto;
+        background: var(--fc-fondo);
+        color: var(--fc-oscuro);
+      }
+
+      .header-brand {
+        background: white;
+        padding: 14px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 3px 8px rgba(97, 162, 41, 0.15);
+        margin-bottom: 15px;
+        border-top: 5px solid var(--fc-verde);
+      }
+      .subtitulo-app {
+        margin: 4px 0 0 0;
+        font-size: 13px;
+        font-weight: bold;
+        color: #666;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .badge-memoria {
+        display: inline-block;
+        margin-top: 6px;
+        font-size: 11px;
+        background: #e8f3df;
+        color: var(--fc-verde-oscuro);
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-weight: bold;
+      }
+
+      .card {
+        background: white;
+        padding: 16px;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        margin-bottom: 15px;
+      }
+
+      label {
+        font-weight: bold;
+        display: block;
+        margin-top: 12px;
+        color: #444;
+        font-size: 14px;
+      }
+
+      input,
+      select,
+      button {
+        width: 100%;
+        padding: 12px;
+        margin-top: 5px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+        font-size: 16px;
+      }
+
+      input[readonly] {
+        background-color: #f4f7f2;
+        border-color: #c5d9b6;
+        color: var(--fc-oscuro);
+        font-weight: bold;
+        text-align: center;
+      }
+
+      button {
+        background-color: var(--fc-verde);
+        color: white;
+        border: none;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 16px;
+        font-size: 18px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      button:active {
+        transform: scale(0.98);
+      }
+
+      .btn-scan {
+        background: linear-gradient(
+          135deg,
+          var(--fc-verde) 0%,
+          var(--fc-verde-oscuro) 100%
+        );
+        margin-top: 0;
+        padding: 16px;
+        font-size: 19px;
+        border-bottom: 3px solid var(--fc-lima);
+      }
+
+      .btn-export {
+        background-color: var(--fc-oscuro);
+        font-size: 16px;
+      }
+      .btn-clear {
+        background-color: #dc3545;
+        margin-top: 8px;
+        font-size: 14px;
+        padding: 10px;
+      }
+
+      .grupo-botones {
+        display: flex;
+        gap: 10px;
+        margin-top: 8px;
+      }
+      .btn-voz {
+        background-color: var(--fc-lima);
+        color: #1e2910;
+        margin-top: 0;
+        flex: 1;
+        font-size: 16px;
+      }
+      .btn-voz.grabando {
+        background-color: #ff9800;
+        color: white;
+        animation: pulso 1s infinite;
+      }
+      .btn-pegar {
+        background-color: #5a6268;
+        margin-top: 0;
+        flex: 1;
+        font-size: 16px;
+      }
+
+      .grupo-cantidad {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 5px;
+      }
+      .btn-cant {
+        width: 65px;
+        height: 50px;
+        margin-top: 0;
+        font-size: 26px;
+        background-color: var(--fc-oscuro);
+        flex-shrink: 0;
+      }
+      .input-cant {
+        height: 50px;
+        margin-top: 0;
+        font-size: 22px;
+      }
+
+      @keyframes pulso {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.6;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+      #reader {
+        width: 100%;
+        margin-top: 10px;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      h3 {
+        margin-top: 0;
+        color: var(--fc-verde-oscuro);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .resumen-unidades {
+        font-size: 14px;
+        background: #e8f3df;
+        padding: 4px 10px;
+        border-radius: 20px;
+        color: var(--fc-verde-oscuro);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+        font-size: 14px;
+      }
+      th,
+      td {
+        border: 1px solid #dce6d5;
+        padding: 8px 6px;
+        text-align: left;
+      }
+      th {
+        background-color: var(--fc-verde);
+        color: white;
+      }
+      tr:nth-child(even) {
+        background-color: #f9fbf8;
+      }
+
+      tr.pasado-pc {
+        background-color: #e2e3e5 !important;
+        color: #777;
+        text-decoration: line-through;
+        opacity: 0.7;
+      }
+      tr.pasado-pc .badge-motivo {
+        background: #ccc;
+        color: #555;
+      }
+
+      .badge-motivo {
+        background: var(--fc-lima);
+        color: #1e2910;
+        padding: 3px 6px;
+        border-radius: 5px;
+        font-weight: bold;
+        display: inline-block;
+        font-size: 12px;
+      }
+      .btn-mini {
+        width: auto;
+        padding: 5px 8px;
+        margin: 0;
+        font-size: 14px;
+        border-radius: 5px;
+        background: #e9ecef;
+        color: #333;
+        box-shadow: none;
+      }
+      .btn-check-ok {
+        background: var(--fc-verde);
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header-brand">
+      <svg width="240" height="44" viewBox="0 0 260 48" xmlns="http://w3.org">
+        <circle cx="22" cy="38" r="4" fill="#61A229" />
+        <circle cx="38" cy="38" r="4" fill="#B8CA04" />
+        <path
+          d="M8 10 H15 L20 30 H41 L45 15 H18"
+          fill="none"
+          stroke="#61A229"
+          stroke-width="3.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <text
+          x="54"
+          y="31"
+          font-family="Arial Black, Impact, sans-serif"
+          font-weight="900"
+          font-size="25"
+          fill="#61A229"
+          letter-spacing="-0.5"
+        >
+          FAMILY
+        </text>
+        <text
+          x="158"
+          y="31"
+          font-family="Arial Black, Impact, sans-serif"
+          font-weight="900"
+          font-size="25"
+          fill="#B8CA04"
+          letter-spacing="-0.5"
+        >
+          CASH
+        </text>
+      </svg>
+      <p class="subtitulo-app">Control de Mermas y Donaciones</p>
+      <div class="badge-memoria">
+        🧠 Productos memorizados: <span id="contadorMemoria">0</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <button type="button" class="btn-scan" onclick="iniciarCamara()">
+        📷 Escanear Código
+      </button>
+      <div id="reader"></div>
+
+      <form id="formulario">
+        <label>Código de Barras:</label>
+        <input
+          type="text"
+          id="codigo"
+          readonly
+          required
+          placeholder="Pulsa el botón verde arriba"
+        />
+
+        <label>Nombre del Producto:</label>
+        <input
+          type="text"
+          id="producto"
+          readonly
+          required
+          placeholder="Se rellenará solo o por voz..."
+        />
+        <div class="grupo-botones">
+          <button
+            type="button"
+            id="btnVoz"
+            class="btn-voz"
+            onclick="dictarVoz()"
+          >
+            🎙️ Dictar
+          </button>
+          <button type="button" class="btn-pegar" onclick="pegarTexto()">
+            📋 Pegar
+          </button>
+        </div>
+
+        <label>Cantidad a sumar:</label>
+        <div class="grupo-cantidad">
+          <button type="button" class="btn-cant" onclick="cambiarCantidad(-1)">
+            −
+          </button>
+          <input
+            type="number"
+            id="cantidad"
+            class="input-cant"
+            value="1"
+            min="1"
+            readonly
+            required
+          />
+          <button type="button" class="btn-cant" onclick="cambiarCantidad(1)">
+            +
+          </button>
+        </div>
+
+        <label>Motivo:</label>
+        <select id="motivo" required>
+          <option value="DA">DA - Donación Animales</option>
+          <option value="UI">UI - Uso Interno</option>
+          <option value="RT">RT - Rotura</option>
+          <option value="RB">RB - Robo</option>
+        </select>
+
+        <button type="submit">💾 Guardar / Sumar</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>
+        <span>Lista (<span id="contador">0</span> líneas)</span>
+        <span class="resumen-unidades"
+          >Total: <span id="totalUnidades">0</span> uds.</span
+        >
+      </h3>
+      <button type="button" class="btn-export" onclick="exportarCSV()">
+        📥 Descargar Excel (CSV)
+      </button>
+      <button type="button" class="btn-clear" onclick="borrarTodo()">
+        🗑️ Limpiar Lista del Día
+      </button>
+
+      <table id="tabla">
+        <thead>
+          <tr>
+            <th>Cód.</th>
+            <th>Producto</th>
+            <th>Uds</th>
+            <th>Sigla</th>
+            <th>PC</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker.register("./sw.js").catch(function (err) {
+            console.log("SW error:", err);
+          });
+        });
+      }
+
+      var registros = JSON.parse(localStorage.getItem("mermas")) || [];
+      var diccionarioProductos =
+        JSON.parse(localStorage.getItem("diccionario_fc")) || {};
+      var html5QrcodeScanner;
+      var recognitionActivo = null;
+
+      actualizarTabla();
+      actualizarContadorMemoria();
+
+      function actualizarContadorMemoria() {
+        document.getElementById("contadorMemoria").innerText =
+          Object.keys(diccionarioProductos).length;
+      }
+
+      function sonidoBip() {
+        var ctx = new (window.AudioContext || window.webkitAudioContext)();
+        var osc = ctx.createOscillator();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(1000, ctx.currentTime);
+        osc.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.1);
+      }
+
+      function iniciarCamara() {
+        html5QrcodeScanner = new Html5Qrcode("reader");
+        html5QrcodeScanner
+          .start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: { width: 250, height: 150 } },
+            function (decodedText) {
+              sonidoBip();
+              document.getElementById("codigo").value = decodedText;
+              html5QrcodeScanner.stop().then(function () {
+                document.getElementById("reader").innerHTML = "";
+                buscarProducto(decodedText);
+              });
+            },
+            function () {}
+          )
+          .catch(function () {
+            alert("Error al abrir la cámara. Revisa permisos y usa HTTPS.");
+          });
+      }
+
+      async function buscarProducto(codigo) {
+        var inputProd = document.getElementById("producto");
+
+        if (diccionarioProductos[codigo]) {
+          inputProd.value = diccionarioProductos[codigo];
+          return;
+        }
+
+        if (!navigator.onLine) {
+          inputProd.value = "";
+          dictarVoz();
+          return;
+        }
+
+        inputProd.value = "⏳ Buscando producto...";
+
+        try {
+          var controller = new AbortController();
+          var timeoutId = setTimeout(function () {
+            controller.abort();
+          }, 3000);
+
+          var respuesta = await fetch(
+            "https://openfoodfacts.org" + "/api/v0/product/" + codigo + ".json",
+            { signal: controller.signal }
+          );
+          clearTimeout(timeoutId);
+          var datos = await respuesta.json();
+
+          if (datos.status === 1 && datos.product) {
+            var nombre =
+              datos.product.product_name_es || datos.product.product_name || "";
+            var marca = datos.product.brands
+              ? " (" + datos.product.brands + ")"
+              : "";
+
+            if (nombre.trim() !== "") {
+              inputProd.value = nombre + marca;
+              return;
+            }
+          }
+        } catch (error) {
+          console.log("Sin respuesta rápida, pasando a voz");
+        }
+
+        inputProd.value = "";
+        dictarVoz();
+      }
+
+      function dictarVoz() {
+        var SpeechRecognition =
+          window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+          return alert("Tu navegador no soporta voz. Usa Google Chrome.");
+        }
+
+        if (recognitionActivo) recognitionActivo.stop();
+
+        var recognition = new SpeechRecognition();
+        recognitionActivo = recognition;
+        recognition.lang = "es-ES";
+        recognition.interimResults = false;
+
+        var btn = document.getElementById("btnVoz");
+        btn.innerText = "🛑 Habla ahora...";
+        btn.classList.add("grabando");
+
+        recognition.start();
+
+        recognition.onresult = function (event) {
+          var texto = event.results[0][0].transcript;
+          document.getElementById("producto").value =
+            texto.charAt(0).toUpperCase() + texto.slice(1);
+        };
+
+        recognition.onerror = function () {
+          btn.innerText = "🎙️ Reintentar Voz";
+          btn.classList.remove("grabando");
+        };
+
+        recognition.onend = function () {
+          btn.innerText = "🎙️ Dictar";
+          btn.classList.remove("grabando");
+          recognitionActivo = null;
+        };
+      }
+
+      async function pegarTexto() {
+        if (recognitionActivo) recognitionActivo.stop();
+        try {
+          var texto = await navigator.clipboard.readText();
+          if (texto) {
+            document.getElementById("producto").value = texto;
+          } else {
+            alert("No hay texto copiado.");
+          }
+        } catch (e) {
+          alert("Permite el acceso al portapapeles en tu navegador.");
+        }
+      }
+
+      function cambiarCantidad(delta) {
+        var input = document.getElementById("cantidad");
+        var valorActual = parseInt(input.value) || 1;
+        var nuevoValor = valorActual + delta;
+        if (nuevoValor >= 1) input.value = nuevoValor;
+      }
+
+      document
+        .getElementById("formulario")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          var cod = document.getElementById("codigo").value.trim();
+          var prod = document.getElementById("producto").value.trim();
+          var cant = parseInt(document.getElementById("cantidad").value) || 1;
+          var mot = document.getElementById("motivo").value;
+
+          if (!cod || !prod || prod.indexOf("Buscando") !== -1) {
+            return alert(
+              "Espera a que cargue o dicta/pega el nombre del producto."
+            );
+          }
+
+          diccionarioProductos[cod] = prod;
+          localStorage.setItem(
+            "diccionario_fc",
+            JSON.stringify(diccionarioProductos)
+          );
+          actualizarContadorMemoria();
+
+          var indiceExistente = registros.findIndex(function (r) {
+            return r.codigo === cod && r.motivo === mot;
+          });
+
+          if (indiceExistente !== -1) {
+            registros[indiceExistente].cantidad =
+              parseInt(registros[indiceExistente].cantidad) + cant;
+            registros[indiceExistente].producto = prod;
+            registros[indiceExistente].pasado = false;
+          } else {
+            registros.push({
+              fecha: new Date().toLocaleDateString(),
+              codigo: cod,
+              producto: prod,
+              cantidad: cant,
+              motivo: mot,
+              pasado: false,
+            });
+          }
+
+          localStorage.setItem("mermas", JSON.stringify(registros));
+
+          actualizarTabla();
+          this.reset();
+          document.getElementById("cantidad").value = 1;
+        });
+
+      function togglePasado(index) {
+        registros[index].pasado = !registros[index].pasado;
+        localStorage.setItem("mermas", JSON.stringify(registros));
+        actualizarTabla();
+      }
+
+      function copiarCodigo(cod) {
+        navigator.clipboard.writeText(cod);
+      }
+
+      function actualizarTabla() {
+        var tbody = document.querySelector("#tabla tbody");
+        tbody.innerHTML = "";
+        document.getElementById("contador").innerText = registros.length;
+
+        var sumaUnidades = 0;
+
+        registros.forEach(function (reg, index) {
+          sumaUnidades += parseInt(reg.cantidad);
+          var claseFila = reg.pasado ? "pasado-pc" : "";
+          var claseBtn = reg.pasado ? "btn-mini btn-check-ok" : "btn-mini";
+
+          var fila =
+            '<tr class="' +
+            claseFila +
+            '">' +
+            "<td>" +
+            reg.codigo +
+            ' <button type="button" class="btn-mini" onclick="copiarCodigo(\'' +
+            reg.codigo +
+            '\')" title="Copiar código">📋</button></td>' +
+            "<td>" +
+            reg.producto +
+            "</td>" +
+            '<td><strong style="font-size:16px;">' +
+            reg.cantidad +
+            "</strong></td>" +
+            '<td><span class="badge-motivo">' +
+            reg.motivo +
+            "</span></td>" +
+            '<td style="text-align:center;"><button type="button" class="' +
+            claseBtn +
+            '" onclick="togglePasado(' +
+            index +
+            ')">✅</button></td>' +
+            "</tr>";
+          tbody.innerHTML += fila;
+        });
+
+        document.getElementById("totalUnidades").innerText = sumaUnidades;
+      }
+
+      function exportarCSV() {
+        if (registros.length === 0) return alert("No hay datos para exportar.");
+
+        var csv = "Fecha;Codigo;Producto;Cantidad;Motivo;Pasado_PC\n";
+        registros.forEach(function (r) {
+          csv +=
+            r.fecha +
+            ';"' +
+            r.codigo +
+            '";"' +
+            r.producto +
+            '";' +
+            r.cantidad +
+            ";" +
+            r.motivo +
+            ";" +
+            (r.pasado ? "SI" : "NO") +
+            "\n";
+        });
+
+        var blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        var link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download =
+          "mermas_familycash_" + new Date().toISOString().slice(0, 10) + ".csv";
+        link.click();
+      }
+
+      function borrarTodo() {
+        if (
+          confirm(
+            "¿Limpiar la lista de hoy? (Tus productos memorizados se mantendrán guardados)"
+          )
+        ) {
+          registros = [];
+          localStorage.removeItem("mermas");
+          actualizarTabla();
+        }
+      }
+    </script>
+  </body>
+</html>

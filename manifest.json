@@ -1,0 +1,9 @@
+{
+  "name": "Control Mermas Family Cash",
+  "short_name": "Mermas FC",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f2f6ef",
+  "theme_color": "#61A229",
+  "orientation": "portrait"
+}
